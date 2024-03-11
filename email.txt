@@ -1,7 +1,7 @@
 protected async void btn_Email_ClickAsync(object sender, EventArgs e)
 {
     string clientId = "afb887bf-1db3-48c2-9fba-f6e7815dcce1";
-    string clientSecret = "Vul8Q~HfQmlmYMVKQWRsMxTuW31rkMAeMhsfEaxC";
+    string clientSecret = "iVE8Q~.MSdrCcSK6PWN6nFfGiRuK5DqmuvHr2bd9";
     string tenantId = "f8cdef31-a31e-4b4a-93e4-5f571e91255a";
 
     string userEmail = "k.vaishnavi.one@outlook.com";
