@@ -1,0 +1,78 @@
+protected async void btn_Email_ClickAsync(object sender, EventArgs e)
+{
+    string clientId = "afb887bf-1db3-48c2-9fba-f6e7815dcce1";
+    string clientSecret = "Vul8Q~HfQmlmYMVKQWRsMxTuW31rkMAeMhsfEaxC";
+    string tenantId = "f8cdef31-a31e-4b4a-93e4-5f571e91255a";
+
+    string userEmail = "k.vaishnavi.one@outlook.com";
+
+    string accessToken = await GetAccessToken(clientId, clientSecret, tenantId);
+
+    if (!string.IsNullOrEmpty(accessToken))
+    {
+        string endpoint = $"https://graph.microsoft.com/v1.0/users/{userEmail}/sendMail";
+
+        string jsonBody = @"{
+        ""message"": {
+            ""subject"": ""Test Email"",
+            ""body"": {
+                ""content"": ""This is a test email sent using Microsoft Graph API."",
+                ""contentType"": ""Text""
+            },
+            ""toRecipients"": [
+                {
+                    ""emailAddress"": {
+                        ""address"": ""sushilpatil@outlook.com""
+                    }
+                }
+            ]
+        }
+    }";
+
+        using (HttpClient client = new HttpClient())
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            try
+            {
+                HttpResponseMessage response = await client.PostAsync(endpoint, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Email sent successfully!");
+                }
+                else
+                {
+                    MessageBox.Show($"Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+        }
+    }
+    else
+    {
+        Console.WriteLine("Failed to obtain access token");
+    }
+}
+
+static async Task<string> GetAccessToken(string clientId, string clientSecret, string tenantId)
+{
+    string authority = $"https://login.microsoftonline.com/{tenantId}/v2.0";
+    string scope = "https://graph.microsoft.com/.default";
+
+    var confidentialClient = ConfidentialClientApplicationBuilder
+        .Create(clientId)
+        .WithClientSecret(clientSecret)
+        .WithAuthority(new Uri(authority))
+        .Build();
+
+    var result = await confidentialClient.AcquireTokenForClient(new[] { scope })
+        .ExecuteAsync();
+
+    return result.AccessToken;
+}
