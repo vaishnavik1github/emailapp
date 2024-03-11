@@ -43,28 +43,29 @@ Task.CompletedTask;         }));
 await
 SendEmail(graphServiceClient);         Console.WriteLine(
 "Email sent successfully."
-);     }     
+);     }   
+
+
 static async Task SendEmail(GraphServiceClient graphClient)
-    {         
-var
-message =
-new
-Message         {             Subject =
-"Hello from Microsoft Graph"
-,             Body =
-new
-ItemBody { Content =
-"This is a test email from Microsoft Graph API."
-},             ToRecipients =
-new
-List<Recipient>             {                 
-new
-Recipient { EmailAddress =
-new
-EmailAddress { Address =
-"recipient@example.com"
-} }             },         };         
-await
-graphClient.Me             .SendMail(message,
-true
-)             .Request()             .PostAsync();     }
+{
+    var message = new Message
+    {
+        Subject = "Hello from Microsoft Graph",
+        Body = new ItemBody
+        {
+            Content = "This is a test email from Microsoft Graph API."
+        },
+        ToRecipients = new List<Recipient>
+        { 
+            new Recipient 
+            { 
+                EmailAddress = new EmailAddress 
+                { 
+                    Address = "recipient@example.com"
+                } 
+            }             
+        },
+    };
+
+    await graphClient.Me.SendMail(message, true).Request().PostAsync();
+}
