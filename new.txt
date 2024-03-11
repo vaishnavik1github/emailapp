@@ -1,0 +1,70 @@
+static async Task Main(string[] args)
+    {         
+var
+clientId =
+"your-client-id"
+;         
+var
+clientSecret =
+"your-client-secret"
+;         
+var
+tenantId =
+"your-tenant-id"
+;         
+var
+authority =
+$"https://login.microsoftonline.com/{tenantId}"
+;         
+var
+confidentialClientApplication = ConfidentialClientApplicationBuilder             .Create(clientId)             .WithClientSecret(clientSecret)             .WithAuthority(
+new
+Uri(authority))             .Build();         
+var
+authenticationResult =
+await
+confidentialClientApplication             .AcquireTokenForClient(
+new
+[] {
+"https://graph.microsoft.com/.default"
+})             .ExecuteAsync();         
+var
+graphServiceClient =
+new
+GraphServiceClient(
+new
+DelegateAuthenticationProvider(requestMessage =>         {             requestMessage.Headers.Authorization =
+new
+AuthenticationHeaderValue(
+"Bearer"
+, authenticationResult.AccessToken);             
+return
+Task.CompletedTask;         }));         
+await
+SendEmail(graphServiceClient);         Console.WriteLine(
+"Email sent successfully."
+);     }     
+static async Task SendEmail(GraphServiceClient graphClient)
+    {         
+var
+message =
+new
+Message         {             Subject =
+"Hello from Microsoft Graph"
+,             Body =
+new
+ItemBody { Content =
+"This is a test email from Microsoft Graph API."
+},             ToRecipients =
+new
+List<Recipient>             {                 
+new
+Recipient { EmailAddress =
+new
+EmailAddress { Address =
+"recipient@example.com"
+} }             },         };         
+await
+graphClient.Me             .SendMail(message,
+true
+)             .Request()             .PostAsync();     }
